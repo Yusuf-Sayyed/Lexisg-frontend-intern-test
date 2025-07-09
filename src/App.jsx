@@ -4,7 +4,11 @@ import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Set up PDF.js worker
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.js',
+  import.meta.url,
+).toString();
 
 Modal.setAppElement("#root");
 
@@ -46,6 +50,11 @@ function App() {
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
+    console.log('PDF loaded successfully with', numPages, 'pages');
+  };
+
+  const onDocumentLoadError = (error) => {
+    console.error('Failed to load PDF:', error);
   };
 
   // Function to highlight text in PDF
@@ -246,6 +255,9 @@ function App() {
           <Document
             file="/Dani_Devi_v_Pritam_Singh.pdf"
             onLoadSuccess={onDocumentLoadSuccess}
+            onLoadError={onDocumentLoadError}
+            loading={<div className="p-4 text-center">Loading PDF...</div>}
+            error={<div className="p-4 text-center text-red-600">Failed to load PDF. Please check if the file exists.</div>}
             className="w-full h-full"
           >
             <div className="overflow-auto h-full">
