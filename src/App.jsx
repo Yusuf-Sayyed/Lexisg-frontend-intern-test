@@ -198,7 +198,12 @@ function App() {
       </Modal>
 
       {/* Tailwind Test */}
-      <div className="bg-red-500 p-4 text-white">Tailwind Test</div>
+      <div className="bg-red-500 p-4 text-white font-bold text-xl border-4 border-yellow-400 rounded-lg shadow-lg m-4">
+        Tailwind Test - Should be RED background with WHITE text
+      </div>
+      <div className="test-tailwind">
+        CSS @apply test - Should also be RED with WHITE text
+      </div>
     </div>
   );
 }
