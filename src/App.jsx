@@ -56,14 +56,14 @@ function App() {
   return (
     <div className="flex flex-col h-screen bg-white">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-            <span className="text-white font-semibold text-sm">L</span>
+      <div className="flex items-center justify-center px-4 py-3 border-b border-gray-200 relative">
+        <div className="flex items-center space-x-2">
+          <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+            <span className="text-white font-semibold text-xs">L</span>
           </div>
           <h1 className="text-lg font-semibold text-gray-900">Lexi Legal Assistant</h1>
         </div>
-        <button className="p-2 hover:bg-gray-100 rounded-lg">
+        <button className="absolute right-4 p-2 hover:bg-gray-100 rounded-lg">
           <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
           </svg>
@@ -71,7 +71,7 @@ function App() {
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto" style={{ height: 'calc(100vh - 140px)' }}>
         {messages.length === 0 ? (
           // Welcome Screen
           <div className="h-full flex items-center justify-center">
@@ -88,7 +88,7 @@ function App() {
           </div>
         ) : (
           // Chat Messages
-          <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+          <div className="max-w-3xl mx-auto px-4 py-6 pb-24 space-y-6">
             {messages.map((message, index) => (
               <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`flex max-w-[80%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'} space-x-3`}>
@@ -151,18 +151,18 @@ function App() {
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-gray-200 px-4 py-4">
-        <div className="max-w-3xl mx-auto">
+      <div className="border-t border-gray-200 px-4 py-4 fixed bottom-0 left-0 right-0 bg-white">
+        <div className="max-w-2xl mx-auto">
           <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="relative">
-            <div className="flex items-end space-x-3">
-              <div className="flex-1 relative">
+            <div className="flex items-center justify-center">
+              <div className="w-full max-w-xl relative">
                 <textarea
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Ask a legal question..."
                   className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   rows="1"
-                  style={{ minHeight: '44px', maxHeight: '120px' }}
+                  style={{ minHeight: '44px', maxHeight: '80px' }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
