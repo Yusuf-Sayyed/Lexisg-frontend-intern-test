@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -7,6 +7,23 @@ import "react-pdf/dist/Page/TextLayer.css";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 Modal.setAppElement("#root");
+
+// Custom CSS for highlighting
+const highlightStyle = `
+  .react-pdf__Page__textContent .highlight {
+    background-color: yellow !important;
+    padding: 2px 4px;
+    border-radius: 3px;
+    box-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+  }
+`;
+
+// Add custom CSS to document
+if (typeof document !== 'undefined') {
+  const styleElement = document.createElement('style');
+  styleElement.textContent = highlightStyle;
+  document.head.appendChild(styleElement);
+}
 
 function App() {
   const [query, setQuery] = useState("");
@@ -26,6 +43,34 @@ function App() {
       },
     },
   ];
+
+  const onDocumentLoadSuccess = ({ numPages }) => {
+    setNumPages(numPages);
+  };
+
+  // Function to highlight text in PDF
+  const highlightTextInPDF = () => {
+    setTimeout(() => {
+      const textElements = document.querySelectorAll('.react-pdf__Page__textContent span');
+      textElements.forEach((element) => {
+        const text = element.textContent;
+        if (text && text.includes('10% of annual income should have been awarded on account of future prospects')) {
+          element.classList.add('highlight');
+        }
+        // Also highlight "Para 7" if found
+        if (text && text.includes('Para 7')) {
+          element.classList.add('highlight');
+        }
+      });
+    }, 1000);
+  };
+
+  // Highlight text when modal opens and PDF is loaded
+  React.useEffect(() => {
+    if (modalOpen && numPages) {
+      highlightTextInPDF();
+    }
+  }, [modalOpen, numPages]);
 
   const handleSubmit = () => {
     if (!query.trim()) return;
@@ -195,15 +240,27 @@ function App() {
         </div>
 
         <div
-          className="border rounded-lg overflow-hidden"
+          className="border rounded-lg overflow-hidden bg-gray-100"
           style={{ height: "600px" }}
         >
-          <iframe
-            src="https://4d7a2b17-9977-4658-b92e-3e5cc3a8b2ed-00-zzh84i5y68dp.pike.replit.dev/Dani_Devi_v_Pritam_Singh.pdf"
-            width="100%"
-            height="100%"
-            className="w-full h-full rounded-md border"
-          />
+          <Document
+            file="https://4d7a2b17-9977-4658-b92e-3e5cc3a8b2ed-00-zzh84i5y68dp.pike.replit.dev/Dani_Devi_v_Pritam_Singh.pdf"
+            onLoadSuccess={onDocumentLoadSuccess}
+            className="w-full h-full"
+          >
+            <div className="overflow-auto h-full">
+              {Array.from(new Array(numPages), (el, index) => (
+                <Page
+                  key={`page_${index + 1}`}
+                  pageNumber={index + 1}
+                  width={600}
+                  className="mb-4"
+                  renderTextLayer={true}
+                  renderAnnotationLayer={false}
+                />
+              ))}
+            </div>
+          </Document>
         </div>
       </Modal>
     </div>
