@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Modal from "react-modal";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -23,7 +22,7 @@ function App() {
         "Yes, under Section 166 of the Motor Vehicles Act, 1988, the claimants are entitled to an addition for future prospects...",
       citation: {
         text: "Para 7: 10% of annual income should have been awarded on account of future prospects.",
-        link: "/Dani_Devi_v_Pritam_Singh.pdf",
+        link: "https://4d7a2b17-9977-4658-b92e-3e5cc3a8b2ed-00-zzh84i5y68dp.pike.replit.dev/Dani_Devi_v_Pritam_Singh.pdf",
       },
     },
   ];
@@ -32,7 +31,7 @@ function App() {
     if (!query.trim()) return;
 
     const userMessage = { type: "user", content: query };
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setQuery("");
     setIsLoading(true);
 
@@ -44,11 +43,13 @@ function App() {
 
       const assistantMessage = {
         type: "assistant",
-        content: match ? match.answer : "I'm sorry, I couldn't find relevant legal information for your question.",
-        citations: match ? [match.citation] : []
+        content: match
+          ? match.answer
+          : "I'm sorry, I couldn't find relevant legal information for your question.",
+        citations: match ? [match.citation] : [],
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
+      setMessages((prev) => [...prev, assistantMessage]);
       setIsLoading(false);
     }, 1000);
   };
@@ -60,8 +61,12 @@ function App() {
         {messages.length === 0 ? (
           <div className="flex h-full items-center justify-center text-center">
             <div>
-              <h2 className="text-2xl font-semibold mb-2">Lexi Legal Assistant</h2>
-              <p className="text-gray-300">Ask me a legal question and I’ll cite real judgments.</p>
+              <h2 className="text-2xl font-semibold mb-2">
+                Lexi Legal Assistant
+              </h2>
+              <p className="text-gray-300">
+                Ask me a legal question and I’ll cite real judgments.
+              </p>
             </div>
           </div>
         ) : (
@@ -138,8 +143,18 @@ function App() {
             disabled={isLoading || !query.trim()}
             className="text-white p-2 rounded-md bg-[#10a37f] hover:bg-[#0f9772] disabled:opacity-50"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+              />
             </svg>
           </button>
         </form>
@@ -163,47 +178,34 @@ function App() {
             onClick={() => setModalOpen(false)}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
 
-        <div className="border rounded-lg overflow-auto bg-gray-50" style={{ height: "600px" }}>
-          <Document
-            file="/Dani_Devi_v_Pritam_Singh.pdf"
-            onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-          >
-            {Array.from(new Array(numPages), (el, index) => (
-              <Page
-                key={`page_${index + 1}`}
-                pageNumber={index + 1}
-                className="my-4"
-                customTextRenderer={({ str }) => {
-                  const highlight =
-                    str.includes("54-55 years") ||
-                    str.includes("future prospects") ||
-                    str.includes("age of the deceased");
-
-                  return highlight ? (
-                    <mark className="bg-yellow-300 px-1">{str}</mark>
-                  ) : (
-                    str
-                  );
-                }}
-              />
-            ))}
-          </Document>
+        <div
+          className="border rounded-lg overflow-hidden"
+          style={{ height: "600px" }}
+        >
+          <iframe
+            src="https://4d7a2b17-9977-4658-b92e-3e5cc3a8b2ed-00-zzh84i5y68dp.pike.replit.dev/Dani_Devi_v_Pritam_Singh.pdf"
+            width="100%"
+            height="100%"
+            className="w-full h-full rounded-md border"
+          />
         </div>
       </Modal>
-
-      {/* Tailwind Test */}
-      <div className="bg-red-500 p-4 text-white font-bold text-xl border-4 border-yellow-400 rounded-lg shadow-lg m-4">
-        Tailwind Test - Should be RED background with WHITE text
-      </div>
-      <div className="test-tailwind">
-        CSS @apply test - Should also be RED with WHITE text
-      </div>
     </div>
   );
 }
