@@ -1,0 +1,40 @@
+Failed to load module script: The server responded with a non-JavaScript MIME type of "text/html". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+react-pdf.js?v=36eb3b94:308 Warning: Setting up fake worker.
+react-pdf.js?v=36eb3b94:12560  GET https://4d7a2b17-9977-4658-b92e-3e5cc3a8b2ed-00-zzh84i5y68dp.pike.replit.dev/src/pdfjs-dist/build/pdf.worker.min.js net::ERR_ABORTED 404 (Not Found)
+loader @ react-pdf.js?v=36eb3b94:12560
+get _setupFakeWorkerGlobal @ react-pdf.js?v=36eb3b94:12564
+setupFakeWorker_fn @ react-pdf.js?v=36eb3b94:12664
+terminateEarly @ react-pdf.js?v=36eb3b94:12613
+worker.addEventListener.signal @ react-pdf.js?v=36eb3b94:12619Understand this error
+chunk-3HTPT5OH.js?v=36eb3b94:24 Warning: Error: Setting up fake worker failed: "Failed to fetch dynamically imported module: https://4d7a2b17-9977-4658-b92e-3e5cc3a8b2ed-00-zzh84i5y68dp.pike.replit.dev/src/pdfjs-dist/build/pdf.worker.min.js".
+printWarning2 @ chunk-3HTPT5OH.js?v=36eb3b94:24
+warning @ chunk-3HTPT5OH.js?v=36eb3b94:43
+onLoadError @ react-pdf.js?v=36eb3b94:23934
+(anonymous) @ react-pdf.js?v=36eb3b94:23972
+commitHookEffectListMount @ chunk-PUXIOP3Q.js?v=36eb3b94:16902
+commitPassiveMountOnFiber @ chunk-PUXIOP3Q.js?v=36eb3b94:18150
+commitPassiveMountEffects_complete @ chunk-PUXIOP3Q.js?v=36eb3b94:18123
+commitPassiveMountEffects_begin @ chunk-PUXIOP3Q.js?v=36eb3b94:18113
+commitPassiveMountEffects @ chunk-PUXIOP3Q.js?v=36eb3b94:18103
+flushPassiveEffectsImpl @ chunk-PUXIOP3Q.js?v=36eb3b94:19484
+flushPassiveEffects @ chunk-PUXIOP3Q.js?v=36eb3b94:19441
+(anonymous) @ chunk-PUXIOP3Q.js?v=36eb3b94:19322
+workLoop @ chunk-PUXIOP3Q.js?v=36eb3b94:195
+flushWork @ chunk-PUXIOP3Q.js?v=36eb3b94:174
+performWorkUntilDeadline @ chunk-PUXIOP3Q.js?v=36eb3b94:382Understand this error
+App.jsx:53 Failed to load PDF: Error: Setting up fake worker failed: "Failed to fetch dynamically imported module: https://4d7a2b17-9977-4658-b92e-3e5cc3a8b2ed-00-zzh84i5y68dp.pike.replit.dev/src/pdfjs-dist/build/pdf.worker.min.js".
+    at react-pdf.js?v=36eb3b94:12677:45
+onDocumentLoadError @ App.jsx:53
+onLoadError @ react-pdf.js?v=36eb3b94:23936
+(anonymous) @ react-pdf.js?v=36eb3b94:23972
+commitHookEffectListMount @ chunk-PUXIOP3Q.js?v=36eb3b94:16902
+commitPassiveMountOnFiber @ chunk-PUXIOP3Q.js?v=36eb3b94:18150
+commitPassiveMountEffects_complete @ chunk-PUXIOP3Q.js?v=36eb3b94:18123
+commitPassiveMountEffects_begin @ chunk-PUXIOP3Q.js?v=36eb3b94:18113
+commitPassiveMountEffects @ chunk-PUXIOP3Q.js?v=36eb3b94:18103
+flushPassiveEffectsImpl @ chunk-PUXIOP3Q.js?v=36eb3b94:19484
+flushPassiveEffects @ chunk-PUXIOP3Q.js?v=36eb3b94:19441
+(anonymous) @ chunk-PUXIOP3Q.js?v=36eb3b94:19322
+workLoop @ chunk-PUXIOP3Q.js?v=36eb3b94:195
+flushWork @ chunk-PUXIOP3Q.js?v=36eb3b94:174
+performWorkUntilDeadline @ chunk-PUXIOP3Q.js?v=36eb3b94:382Understand this error
