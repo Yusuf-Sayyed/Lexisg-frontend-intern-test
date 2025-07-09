@@ -4,11 +4,8 @@ import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
-// Set up PDF.js worker using legacy mode
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-
-// Fallback: disable worker if it fails to load
-pdfjs.GlobalWorkerOptions.workerPort = null;
+// Disable worker entirely to avoid CORS issues
+pdfjs.GlobalWorkerOptions.workerSrc = false;
 
 Modal.setAppElement("#root");
 
