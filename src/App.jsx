@@ -196,9 +196,11 @@ function App() {
           </Document>
         </div>
       </Modal>
+
+      {/* Tailwind Test */}
+      <div className="bg-red-500 p-4 text-white">Tailwind Test</div>
     </div>
   );
-
 }
 
 export default App;
