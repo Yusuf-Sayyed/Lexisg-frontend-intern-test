@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import Modal from "react-modal";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -11,7 +12,7 @@ Modal.setAppElement("#root");
 function App() {
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [response, setResponse] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [numPages, setNumPages] = useState(null);
 
@@ -28,117 +29,190 @@ function App() {
   ];
 
   const handleSubmit = () => {
+    if (!query.trim()) return;
+
+    const userMessage = { type: "user", content: query };
+    setMessages(prev => [...prev, userMessage]);
+    setQuery("");
     setIsLoading(true);
-    setResponse(null);
 
     setTimeout(() => {
       const lowerQuery = query.toLowerCase();
-
       const match = simulatedDatabase.find((entry) =>
         entry.keywords.some((keyword) => lowerQuery.includes(keyword)),
       );
 
-      if (match) {
-        setResponse({
-          answer: match.answer,
-          citations: [match.citation],
-        });
-      } else {
-        setResponse({
-          answer:
-            "I'm sorry, I couldn't find relevant legal information for your question.",
-          citations: [],
-        });
-      }
+      const assistantMessage = {
+        type: "assistant",
+        content: match ? match.answer : "I'm sorry, I couldn't find relevant legal information for your question.",
+        citations: match ? [match.citation] : []
+      };
 
+      setMessages(prev => [...prev, assistantMessage]);
       setIsLoading(false);
     }, 1000);
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white">
-      <div className="flex flex-col max-w-2xl w-full mx-auto px-4 py-8 space-y-6">
-        <h1 className="text-2xl font-bold">Lexi Legal Assistant</h1>
+    <div className="flex flex-col h-screen bg-white">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+            <span className="text-white font-semibold text-sm">L</span>
+          </div>
+          <h1 className="text-lg font-semibold text-gray-900">Lexi Legal Assistant</h1>
+        </div>
+        <button className="p-2 hover:bg-gray-100 rounded-lg">
+          <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+          </svg>
+        </button>
+      </div>
 
-        {response && (
-          <div className="bg-gray-700 p-4 rounded shadow">
-            <p>{response.answer}</p>
-
-            {response.citations.length > 0 && (
-              <div className="mt-4">
-                <p className="text-sm text-gray-300">Citation:</p>
-                <button
-                  onClick={() => setModalOpen(true)}
-                  className="text-blue-400 underline text-sm mt-1"
-                >
-                  {response.citations[0].text}
-                </button>
-                <p className="text-xs text-green-400 italic mt-1">
-                  📌 Highlighted Para 7 (real)
-                </p>
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto">
+        {messages.length === 0 ? (
+          // Welcome Screen
+          <div className="h-full flex items-center justify-center">
+            <div className="text-center max-w-md mx-auto px-4">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2m-6 4h4" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">How can I help you today?</h2>
+              <p className="text-gray-600">Ask me any legal question and I'll provide relevant information with citations.</p>
+            </div>
+          </div>
+        ) : (
+          // Chat Messages
+          <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+            {messages.map((message, index) => (
+              <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`flex max-w-[80%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'} space-x-3`}>
+                  {/* Avatar */}
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    message.type === 'user' 
+                      ? 'bg-blue-600 ml-3' 
+                      : 'bg-green-600 mr-3'
+                  }`}>
+                    <span className="text-white font-semibold text-sm">
+                      {message.type === 'user' ? 'U' : 'L'}
+                    </span>
+                  </div>
+                  
+                  {/* Message Content */}
+                  <div className={`rounded-2xl px-4 py-3 ${
+                    message.type === 'user' 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-100 text-gray-900'
+                  }`}>
+                    <p className="text-sm leading-relaxed">{message.content}</p>
+                    
+                    {/* Citations */}
+                    {message.citations && message.citations.length > 0 && (
+                      <div className="mt-3 pt-3 border-t border-gray-200">
+                        <p className="text-xs text-gray-600 mb-2">Citation:</p>
+                        <button
+                          onClick={() => setModalOpen(true)}
+                          className="text-blue-600 hover:text-blue-800 underline text-xs"
+                        >
+                          {message.citations[0].text}
+                        </button>
+                        <p className="text-xs text-green-600 mt-1">📌 Highlighted Para 7</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            {/* Loading Indicator */}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="flex space-x-3">
+                  <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                    <span className="text-white font-semibold text-sm">L</span>
+                  </div>
+                  <div className="bg-gray-100 rounded-2xl px-4 py-3">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
         )}
       </div>
 
-      {/* ChatGPT-style bottom input */}
-      <div className="fixed bottom-0 left-0 w-full bg-gray-800 px-4 py-4">
-        <div className="max-w-2xl mx-auto">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSubmit();
-            }}
-            className="flex items-center bg-gray-700 rounded-lg px-4 py-2"
-          >
-            <input
-              type="text"
-              placeholder="Ask a legal question..."
-              className="flex-1 bg-transparent text-white placeholder-gray-400 outline-none"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="ml-2 text-white bg-blue-600 px-4 py-1 rounded hover:bg-blue-700 disabled:opacity-50"
-              disabled={isLoading || !query.trim()}
-            >
-              {isLoading ? "Thinking..." : "Send"}
-            </button>
+      {/* Input Area */}
+      <div className="border-t border-gray-200 px-4 py-4">
+        <div className="max-w-3xl mx-auto">
+          <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="relative">
+            <div className="flex items-end space-x-3">
+              <div className="flex-1 relative">
+                <textarea
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Ask a legal question..."
+                  className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  rows="1"
+                  style={{ minHeight: '44px', maxHeight: '120px' }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSubmit();
+                    }
+                  }}
+                />
+                <button
+                  type="submit"
+                  disabled={isLoading || !query.trim()}
+                  className="absolute right-2 bottom-2 p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </form>
         </div>
       </div>
 
-      {/* Modal */}
+      {/* PDF Modal */}
       <Modal
         isOpen={modalOpen}
         onRequestClose={() => setModalOpen(false)}
         contentLabel="PDF Viewer"
-        className="relative max-w-5xl w-full mx-auto mt-20 bg-white p-4 rounded shadow-lg outline-none"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-50"
+        className="relative max-w-5xl w-full mx-auto mt-20 bg-white p-6 rounded-xl shadow-2xl outline-none"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-50 p-4"
       >
         {/* Floating Badge */}
-        <div className="absolute top-2 right-2 bg-yellow-200 text-yellow-800 px-3 py-1 text-xs rounded-full shadow font-medium z-10">
+        <div className="absolute top-4 right-4 bg-yellow-100 text-yellow-800 px-3 py-1 text-xs rounded-full shadow font-medium z-10">
           📌 Highlighted Para 7
         </div>
 
         {/* Header */}
-        <div className="flex justify-between items-center mb-2">
-          <h2 className="text-lg font-semibold">Judgment PDF</h2>
+        <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-900">Judgment PDF</h2>
           <button
             onClick={() => setModalOpen(false)}
-            className="text-red-500 hover:underline text-sm"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            Close
+            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
-        {/* Real PDF Viewer with Highlight */}
-        <div
-          className="border rounded overflow-auto bg-gray-100"
-          style={{ height: "600px" }}
-        >
+        {/* PDF Viewer */}
+        <div className="border rounded-lg overflow-auto bg-gray-50" style={{ height: "600px" }}>
           <Document
             file="/Dani_Devi_v_Pritam_Singh.pdf"
             onLoadSuccess={({ numPages }) => setNumPages(numPages)}
