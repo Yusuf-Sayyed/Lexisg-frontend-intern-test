@@ -39,7 +39,7 @@ function App() {
         "Yes, under Section 166 of the Motor Vehicles Act, 1988, the claimants are entitled to an addition for future prospects...",
       citation: {
         text: "Para 7: 10% of annual income should have been awarded on account of future prospects.",
-        link: "https://4d7a2b17-9977-4658-b92e-3e5cc3a8b2ed-00-zzh84i5y68dp.pike.replit.dev/Dani_Devi_v_Pritam_Singh.pdf",
+        link: "/Dani_Devi_v_Pritam_Singh.pdf",
       },
     },
   ];
@@ -244,7 +244,7 @@ function App() {
           style={{ height: "600px" }}
         >
           <Document
-            file="https://4d7a2b17-9977-4658-b92e-3e5cc3a8b2ed-00-zzh84i5y68dp.pike.replit.dev/Dani_Devi_v_Pritam_Singh.pdf"
+            file="/Dani_Devi_v_Pritam_Singh.pdf"
             onLoadSuccess={onDocumentLoadSuccess}
             className="w-full h-full"
           >
