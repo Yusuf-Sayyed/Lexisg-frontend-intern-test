@@ -1,16 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Modal from "react-modal";
 import { Document, Page, pdfjs } from "react-pdf";
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
-import { useEffect, useRef } from "react";
+// import "react-pdf/dist/Page/AnnotationLayer.css";
+// import "react-pdf/dist/Page/TextLayer.css";
+import ChatBox from "./components/ChatBox";
+import AnswerCard from "./components/AnswerCard";
+import CitationCard from "./components/CitationCard";
 
-// ✅ Use only this
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
-
 Modal.setAppElement("#root");
 
-function App() {
+export default function App() {
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -71,14 +71,13 @@ function App() {
 
   return (
     <div className="flex flex-col h-screen bg-[#343541] text-white">
-      {/* Messages Area */}
       <div
         className="flex-1 px-4 py-6 space-y-6 max-w-2xl w-full mx-auto overflow-y-auto custom-scrollbar"
         style={{ maxHeight: "calc(100vh - 180px)" }}
       >
         {messages.length === 0 ? (
           <div className="flex h-full items-center justify-center text-center">
-            <div>
+            <div className="text-center mx-auto">
               <h2 className="text-2xl font-semibold mb-2">
                 Lexi Legal Assistant
               </h2>
@@ -89,35 +88,22 @@ function App() {
           </div>
         ) : (
           messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`max-w-[80%] px-4 py-3 rounded-xl ${
-                  msg.type === "user"
-                    ? "bg-[#10a37f] text-white"
-                    : "bg-[#444654] text-white"
-                }`}
-              >
+            <ChatBox key={index} type={msg.type}>
+              {msg.type === "assistant" ? (
+                <>
+                  <AnswerCard
+                    content={msg.content}
+                    citation={msg.citations?.[0]}
+                    onCitationClick={() => setModalOpen(true)}
+                  />
+                </>
+              ) : (
                 <p className="text-sm">{msg.content}</p>
-                {msg.citations?.length > 0 && (
-                  <div className="mt-3 text-xs border-t border-gray-600 pt-2">
-                    <p className="text-gray-300">Citation:</p>
-                    <button
-                      onClick={() => setModalOpen(true)}
-                      className="text-blue-400 underline hover:text-blue-300"
-                    >
-                      {msg.citations[0].text}
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+              )}
+            </ChatBox>
           ))
         )}
         <div ref={messagesEndRef} />
-        {/* Loading indicator */}
         {isLoading && (
           <div className="flex justify-start">
             <div className="bg-[#444654] px-4 py-3 rounded-xl">
@@ -131,7 +117,6 @@ function App() {
         )}
       </div>
 
-      {/* Input */}
       <div className="bg-[#40414f] p-4 fixed bottom-0 left-0 right-0">
         <form
           onSubmit={(e) => {
@@ -175,7 +160,6 @@ function App() {
         </form>
       </div>
 
-      {/* Modal */}
       <Modal
         isOpen={modalOpen}
         onRequestClose={() => setModalOpen(false)}
@@ -212,5 +196,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
