@@ -1,30 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Modal from "react-modal";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
+import { useEffect, useRef } from "react";
 
-// Use unpkg CDN for better reliability with react-pdf
+// ✅ Use only this
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 Modal.setAppElement("#root");
-
-// Custom CSS for highlighting
-const highlightStyle = `
-  .react-pdf__Page__textContent .highlight {
-    background-color: yellow !important;
-    padding: 2px 4px;
-    border-radius: 3px;
-    box-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
-  }
-`;
-
-// Add custom CSS to document
-if (typeof document !== 'undefined') {
-  const styleElement = document.createElement('style');
-  styleElement.textContent = highlightStyle;
-  document.head.appendChild(styleElement);
-}
 
 function App() {
   const [query, setQuery] = useState("");
@@ -32,51 +16,31 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [numPages, setNumPages] = useState(null);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   const simulatedDatabase = [
     {
-      keywords: ["motor accident", "self-employed", "section 166"],
+      keywords: [
+        "motor accident",
+        "self-employed",
+        "section 166",
+        "54–55 years",
+        "future prospects",
+      ],
       answer:
-        "Yes, under Section 166 of the Motor Vehicles Act, 1988, the claimants are entitled to an addition for future prospects...",
+        "Yes, under Section 166 of the Motor Vehicles Act, 1988, the claimants are entitled to an addition for future prospects even when the deceased was self-employed and aged 54–55 years at the time of the accident. In Dani Devi v. Pritam Singh, the Court held that 10% of the deceased’s annual income should be added as future prospects.",
       citation: {
-        text: "Para 7: 10% of annual income should have been awarded on account of future prospects.",
+        text: "“as the age of the deceased at the time of accident was held to be about 54-55 years by the learned Tribunal, being self-employed, as such, 10% of annual income should have been awarded on account of future prospects.” (Para 7 of the document)",
         link: "/Dani_Devi_v_Pritam_Singh.pdf",
       },
     },
   ];
-
-  const onDocumentLoadSuccess = ({ numPages }) => {
-    setNumPages(numPages);
-    console.log('PDF loaded successfully with', numPages, 'pages');
-  };
-
-  const onDocumentLoadError = (error) => {
-    console.error('Failed to load PDF:', error);
-  };
-
-  // Function to highlight text in PDF
-  const highlightTextInPDF = () => {
-    setTimeout(() => {
-      const textElements = document.querySelectorAll('.react-pdf__Page__textContent span');
-      textElements.forEach((element) => {
-        const text = element.textContent;
-        if (text && text.includes('10% of annual income should have been awarded on account of future prospects')) {
-          element.classList.add('highlight');
-        }
-        // Also highlight "Para 7" if found
-        if (text && text.includes('Para 7')) {
-          element.classList.add('highlight');
-        }
-      });
-    }, 1000);
-  };
-
-  // Highlight text when modal opens and PDF is loaded
-  React.useEffect(() => {
-    if (modalOpen && numPages) {
-      highlightTextInPDF();
-    }
-  }, [modalOpen, numPages]);
 
   const handleSubmit = () => {
     if (!query.trim()) return;
@@ -108,7 +72,10 @@ function App() {
   return (
     <div className="flex flex-col h-screen bg-[#343541] text-white">
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6 max-w-2xl w-full mx-auto">
+      <div
+        className="flex-1 px-4 py-6 space-y-6 max-w-2xl w-full mx-auto overflow-y-auto custom-scrollbar"
+        style={{ maxHeight: "calc(100vh - 180px)" }}
+      >
         {messages.length === 0 ? (
           <div className="flex h-full items-center justify-center text-center">
             <div>
@@ -134,8 +101,6 @@ function App() {
                 }`}
               >
                 <p className="text-sm">{msg.content}</p>
-
-                {/* Citation */}
                 {msg.citations?.length > 0 && (
                   <div className="mt-3 text-xs border-t border-gray-600 pt-2">
                     <p className="text-gray-300">Citation:</p>
@@ -145,29 +110,28 @@ function App() {
                     >
                       {msg.citations[0].text}
                     </button>
-                    <p className="text-green-400 mt-1">📌 Highlighted Para 7</p>
                   </div>
                 )}
               </div>
             </div>
           ))
         )}
-
-        {/* Loading Indicator */}
+        <div ref={messagesEndRef} />
+        {/* Loading indicator */}
         {isLoading && (
           <div className="flex justify-start">
             <div className="bg-[#444654] px-4 py-3 rounded-xl">
               <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce [animation-delay:0.1s]"></div>
-                <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" />
+                <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce delay-100" />
+                <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce delay-200" />
               </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Input Area */}
+      {/* Input */}
       <div className="bg-[#40414f] p-4 fixed bottom-0 left-0 right-0">
         <form
           onSubmit={(e) => {
@@ -180,7 +144,7 @@ function App() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Message Lexi..."
-            className="w-full resize-none bg-[#40414f] border border-gray-600 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-green-500 text-white"
+            className="w-full resize-none bg-[#40414f] border border-gray-600 rounded-md px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-green-500"
             rows="1"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -215,61 +179,34 @@ function App() {
       <Modal
         isOpen={modalOpen}
         onRequestClose={() => setModalOpen(false)}
-        contentLabel="PDF Viewer"
-        className="relative max-w-5xl w-full mx-auto mt-20 bg-white p-6 rounded-xl shadow-2xl outline-none"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-50 p-4"
+        className="relative max-w-5xl w-full mx-auto mt-20 bg-white p-4 rounded shadow-lg outline-none"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-50"
       >
-        <div className="absolute top-4 right-4 bg-yellow-100 text-yellow-800 px-3 py-1 text-xs rounded-full shadow font-medium z-10">
-          📌 Highlighted Para 7
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-yellow-200 text-yellow-800 px-4 py-2 text-sm rounded-full shadow font-medium z-10">
+          📌 Check Para 7 for more details
         </div>
 
-        <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Judgment PDF</h2>
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-lg font-semibold">PDF Viewer</h2>
           <button
             onClick={() => setModalOpen(false)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="text-red-500 hover:underline"
           >
-            <svg
-              className="w-5 h-5 text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            Close
           </button>
         </div>
 
         <div
-          className="border rounded-lg overflow-hidden bg-gray-100"
+          className="border rounded overflow-hidden"
           style={{ height: "600px" }}
         >
-          <Document
-            file="/Dani_Devi_v_Pritam_Singh.pdf"
-            onLoadSuccess={onDocumentLoadSuccess}
-            onLoadError={onDocumentLoadError}
-            loading={<div className="p-4 text-center">Loading PDF...</div>}
-            error={<div className="p-4 text-center text-red-600">Failed to load PDF. Please check if the file exists.</div>}
-            className="w-full h-full"
-          >
-            <div className="overflow-auto h-full">
-              {Array.from(new Array(numPages), (el, index) => (
-                <Page
-                  key={`page_${index + 1}`}
-                  pageNumber={index + 1}
-                  width={600}
-                  className="mb-4"
-                  renderTextLayer={true}
-                  renderAnnotationLayer={false}
-                />
-              ))}
-            </div>
-          </Document>
+          <iframe
+            src="/Dani_Devi_v_Pritam_Singh.pdf"
+            width="100%"
+            height="100%"
+            className="border-0"
+            title="PDF View"
+          />
         </div>
       </Modal>
     </div>
